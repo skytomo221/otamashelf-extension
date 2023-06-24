@@ -1,8 +1,8 @@
 import * as net from 'net';
 
-import PageExplorer from 'otamashelf/PageExplorer';
+import BookUpdater from 'otamashelf/BookUpdater';
 
-export default abstract class RemotePageExplorer extends PageExplorer {
+export default abstract class RemoteBookUpdater extends BookUpdater {
   // eslint-disable-next-line no-undef
   [key: string]: any;
 

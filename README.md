@@ -14,3 +14,12 @@ Otamajakushi Bookshelf の拡張機能ライブラリです！
 ## 拡張機能の作り方
 
 Otamajakushi Bookshelf の拡張機能は、TCP 通信を用いて Otamajakushi Bookshelf と連携します。
+
+## デプロイ方法
+
+```console
+npm run build
+./scripts/copy.sh # Windows では .\scripts\copy.ps1 を実行
+cd ./dist
+npm publish
+```
