@@ -1,6 +1,6 @@
 {
   "name": "otamashelf-extension",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "otamashelf extension",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -13,9 +13,6 @@
   },
   "author": "skytomo",
   "license": "MIT",
-  "files": [
-    "dist"
-  ],
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.16.8",
     "@babel/preset-env": "^7.16.11",
