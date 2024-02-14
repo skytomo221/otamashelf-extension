@@ -99,13 +99,5 @@
     "skipLibCheck": true /* Skip type checking all .d.ts files. */
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["src/**/*.test.ts"],
-  "settings": {
-    "import/extensions": [".js", ".jsx", ".json", ".ts", ".tsx"],
-    "import/resolver": {
-      "webpack": {
-        "config": "webpack.config.js"
-      }
-    }
-  }
+  "exclude": ["src/**/*.test.ts"]
 }

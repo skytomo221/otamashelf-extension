@@ -9,13 +9,12 @@
     "prepublish": "run-s fix build",
     "fix": "run-s fix:prettier fix:eslint",
     "fix:eslint": "eslint --fix --ext .ts .",
-    "fix:prettier": "prettier --write . --ignore-path ./.prettierignore"
+    "fix:prettier": "prettier --write . --ignore-path ./.prettierignore",
+    "test": "jest"
   },
   "author": "skytomo",
   "license": "MIT",
   "devDependencies": {
-    "@babel/plugin-transform-modules-commonjs": "^7.16.8",
-    "@babel/preset-env": "^7.16.11",
     "@types/jest": "^27.4.0",
     "@types/ws": "^8.5.10",
     "@typescript-eslint/eslint-plugin": "^5.10.2",
@@ -26,14 +25,11 @@
     "eslint-config-airbnb-typescript": "^17.1.0",
     "eslint-import-resolver-typescript": "^2.5.0",
     "eslint-plugin-import": "^2.25.4",
-    "eslint-plugin-jest": "^26.1.0",
     "jest": "^27.5.0",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.5.1",
     "ts-jest": "^27.1.3",
-    "ts-loader": "^9.2.6",
-    "typescript": "^4.5.5",
-    "webpack": "^5.68.0"
+    "typescript": "^4.5.5"
   },
   "dependencies": {
     "otamashelf": "^1.1.1",
