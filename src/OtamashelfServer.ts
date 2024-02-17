@@ -1,4 +1,4 @@
-import { Server } from 'ws';
+import { Server, WebSocket } from 'ws';
 import { Extension } from 'otamashelf/Extension';
 import { ExtensionProperties } from 'otamashelf/ExtensionProperties';
 import {
@@ -50,136 +50,165 @@ import { RegisterExtension, Response } from './Message';
 
 export default class OtamashelfServer extends Server {
   call(
+    webSocket: WebSocket,
     extensionId: string,
-    event: 'configuration'
+    event: 'configuration',
   ): Promise<ConfigurationReturns>;
 
   call(
+    webSocket: WebSocket,
     extensionId: string,
     event: 'load',
-    params: LoadProps
+    params: LoadProps,
   ): Promise<LoadReturns>;
 
   call(
+    webSocket: WebSocket,
     extensionId: string,
     event: 'template',
-    params: BookTemplateProps
+    params: BookTemplateProps,
   ): Promise<BookTemplateReturns>;
 
   call(
+    webSocket: WebSocket,
     extensionId: string,
     event: 'create',
-    params: BookCreateProps
+    params: BookCreateProps,
   ): Promise<BookCreateReturns>;
 
   call(
+    webSocket: WebSocket,
     extensionId: string,
     event: 'discriminate',
-    params: DiscriminateProps
+    params: DiscriminateProps,
   ): Promise<DiscriminateReturns>;
 
   call(
+    webSocket: WebSocket,
     extensionId: string,
     event: 'load',
-    params: LoadProps
+    params: LoadProps,
   ): Promise<LoadReturns>;
 
   call(
+    webSocket: WebSocket,
     extensionId: string,
     event: 'modify',
-    params: UpdateBookProps
+    params: UpdateBookProps,
   ): Promise<UpdateBookReturns>;
 
   call(
+    webSocket: WebSocket,
     extensionId: string,
     event: 'save',
-    params: SaveProps
+    params: SaveProps,
   ): Promise<SaveReturns>;
 
   call(
+    webSocket: WebSocket,
     extensionId: string,
     event: 'layout',
-    params: LayoutProps
+    params: LayoutProps,
   ): Promise<LayoutReturns>;
 
   call(
+    webSocket: WebSocket,
     extensionId: string,
     event: 'decorateLayout',
-    params: DecorateLayoutProps
+    params: DecorateLayoutProps,
   ): Promise<DecorateLayoutReturns>;
 
   call(
+    webSocket: WebSocket,
     extensionId: string,
     event: 'template',
-    params: PageTemplateProps
+    params: PageTemplateProps,
   ): Promise<PageTemplateReturns>;
 
   call(
+    webSocket: WebSocket,
     extensionId: string,
     event: 'create',
-    params: PageCreateProps
+    params: PageCreateProps,
   ): Promise<PageCreateReturns>;
 
   call<P extends Page>(
+    webSocket: WebSocket,
     extensionId: string,
     event: 'decoratePage',
-    params: DecoratorPageProps<P>
+    params: DecoratorPageProps<P>,
   ): Promise<DecoratorPageReturns<P>>;
 
   call(
+    webSocket: WebSocket,
     extensionId: string,
     event: 'decoratePage',
-    params: NameProps
+    params: NameProps,
   ): Promise<NameReturns>;
 
   call(
+    webSocket: WebSocket,
     extensionId: string,
     event: 'decoratePage',
-    params: NameProps
+    params: NameProps,
   ): Promise<NameReturns>;
 
   call(
+    webSocket: WebSocket,
     extensionId: string,
     event: 'save',
-    params: SearchProps
+    params: SearchProps,
   ): Promise<SearchReturns>;
 
   call<P extends Page>(
+    webSocket: WebSocket,
     extensionId: string,
     event: 'modify',
-    params: ModifyProps<P>
+    params: ModifyProps<P>,
   ): Promise<ModifyReturns<P>>;
 
   call(
+    webSocket: WebSocket,
     extensionId: string,
     event: 'name',
-    params: NameProps
+    params: NameProps,
   ): Promise<NameReturns>;
 
   call(
+    webSocket: WebSocket,
     extensionId: string,
     event: 'generate',
-    params: GenerateProps
+    params: GenerateProps,
   ): Promise<GenerateReturns>;
 
-  call(extensionId: string, event: 'style'): Promise<StyleReturns>;
+  call(
+    webSocket: WebSocket,
+    extensionId: string,
+    event: 'style',
+  ): Promise<StyleReturns>;
 
-  call(extensionId: string, event: string, params?: Json | DecorateLayoutProps | SearchProps) {
+  call(
+    webSocket: WebSocket,
+    extensionId: string,
+    event: string,
+    params?: Json | DecorateLayoutProps | SearchProps,
+  ) {
     const method = `${extensionId}.${event}`;
     return new Promise((resolve, reject) => {
       const id = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
-      const listener = (message: Response) => {
-        if (message.id === id) {
-          this.off('message', listener);
-          if ('result' in message) {
-            resolve(message.result);
+      const listener = (data: { toString: () => string }) => {
+        const response: Response = JSON.parse(data.toString());
+        if (response.id === id) {
+          webSocket.off('message', listener);
+          if ('result' in response) {
+            resolve(response.result);
           } else {
-            reject(message.error);
+            reject(response.error);
           }
         }
       };
-      this.on('message', listener);
-      this.clients.forEach((client) => {
+      webSocket.on('message', listener);
+      this.clients.forEach(client => {
         client.send(
           JSON.stringify({
             jsonrpc: '2.0',
@@ -193,37 +222,51 @@ export default class OtamashelfServer extends Server {
   }
 
   async createBookLoader(
+    webSocket: WebSocket,
     properties: BookLoaderProperties,
   ): Promise<BookLoader> {
     const configurationReturns = await this.call(
+      webSocket,
       properties.id,
       'configuration',
     );
     const configuration = () => configurationReturns;
-    const load = (props: LoadProps): Promise<LoadReturns> => this.call(properties.id, 'load', props);
+    const load = (props: LoadProps): Promise<LoadReturns> =>
+      this.call(webSocket, properties.id, 'load', props);
     return { properties, configuration, load };
   }
 
-  createExtension(properties: ExtensionProperties) {
+  createExtension(webSocket: WebSocket, properties: ExtensionProperties) {
     switch (properties.type) {
       case 'book-creator':
         break;
       case 'book-discriminator':
         break;
       case 'book-loader':
-        return this.createBookLoader(properties);
+        return this.createBookLoader(webSocket, properties);
       default:
         break;
     }
     return null;
   }
 
-  onRegisteringExtension(listener: (extension: Extension) => void) {
-    this.on('message', (request: RegisterExtension) => {
-      if (request.method !== 'register-extension') return;
-      request.params.forEach((properties) => {
-        this.createExtension(properties)?.then(listener);
-      });
+  onRegisteringExtension(
+    webSocket: WebSocket,
+    listener?: (extension: Extension) => void,
+    errorListener?: (error: unknown) => void,
+  ) {
+    webSocket.on('message', data => {
+      try {
+        const request: RegisterExtension = JSON.parse(data.toString());
+        if (request.method !== 'register-extension') return;
+        request.params.forEach(properties => {
+          this.createExtension(webSocket, properties)
+            ?.then(listener)
+            .catch(errorListener);
+        });
+      } catch (error) {
+        if (errorListener) errorListener(error);
+      }
     });
   }
 }

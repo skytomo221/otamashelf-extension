@@ -8,13 +8,14 @@ export default class OtamashelfClient extends WebSocket {
     this.send(
       JSON.stringify({
         jsonrpc: '2.0',
-        method: 'register',
-        params: extension.properties,
+        method: 'register-extension',
+        params: [extension.properties],
       }),
     );
     const { properties } = extension;
     const { id: extensionId } = properties;
-    this.on('message', (request: Request) => {
+    this.on('message', data => {
+      const request: Request = JSON.parse(data.toString());
       const { jsonrpc, id } = request;
       try {
         const [requestExtensionId, method] = request.method.split('.');
