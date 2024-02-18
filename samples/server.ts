@@ -5,7 +5,10 @@ server.on('error', console.error);
 server.on('connection', function connection(ws) {
   console.log('connected');
   ws.on('message', message => console.log(message.toString()));
-  server.onRegisteringExtension(ws, extension => {
-    console.log(extension);
-  }, console.error);
+  ws.onRegisteringExtension(
+    extension => {
+      console.log(extension);
+    },
+    console.error,
+  );
 });
