@@ -1,4 +1,5 @@
-import { Server, WebSocket } from 'ws';
+import http from 'http';
+import { Server, ServerOptions, WebSocket } from 'ws';
 import { Extension } from 'otamashelf/Extension';
 import { ExtensionProperties } from 'otamashelf/ExtensionProperties';
 import {
@@ -47,8 +48,15 @@ import { ModifyProps, ModifyReturns } from 'otamashelf/PageModifier';
 import { GenerateProps, GenerateReturns } from 'otamashelf/IndexGenerator';
 import { StyleReturns } from 'otamashelf/StyleTheme';
 import { RegisterExtension, Response } from './Message';
+import OtamashelfClient from './OtamashelfClient';
 
 export default class OtamashelfServer extends Server {
+  constructor(
+    options: ServerOptions<typeof WebSocket, typeof http.IncomingMessage>,
+  ) {
+    super({ ...options, WebSocket: OtamashelfClient });
+  }
+
   call(
     webSocket: WebSocket,
     extensionId: string,
