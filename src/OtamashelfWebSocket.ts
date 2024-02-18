@@ -3,7 +3,7 @@ import WebSocket from 'ws';
 
 import { Request } from './Message';
 
-export default class OtamashelfClient extends WebSocket {
+export default class OtamashelfWebSocket extends WebSocket {
   registerExtension(extension: Extension) {
     this.send(
       JSON.stringify({

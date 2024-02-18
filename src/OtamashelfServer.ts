@@ -48,13 +48,13 @@ import { ModifyProps, ModifyReturns } from 'otamashelf/PageModifier';
 import { GenerateProps, GenerateReturns } from 'otamashelf/IndexGenerator';
 import { StyleReturns } from 'otamashelf/StyleTheme';
 import { RegisterExtension, Response } from './Message';
-import OtamashelfClient from './OtamashelfClient';
+import OtamashelfWebSocket from './OtamashelfWebSocket';
 
 export default class OtamashelfServer extends Server {
   constructor(
     options: ServerOptions<typeof WebSocket, typeof http.IncomingMessage>,
   ) {
-    super({ ...options, WebSocket: OtamashelfClient });
+    super({ ...options, WebSocket: OtamashelfWebSocket });
   }
 
   call(
